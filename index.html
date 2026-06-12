@@ -72,6 +72,29 @@
             border: 1px solid var(--border-color);
         }
 
+        /* Reçete Listesi İçin Kaydırma Alanı (Scroll Çözümü) */
+        .recipe-scroll-area {
+            max-height: 240px; /* Maksimum 3-4 reçete yüksekliği, fazlasında scroll çıkar */
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* İnce ve Şık Scroll Çubuğu Tasarımı */
+        .recipe-scroll-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .recipe-scroll-area::-webkit-scrollbar-track {
+            background: var(--input-bg);
+            border-radius: 4px;
+        }
+        .recipe-scroll-area::-webkit-scrollbar-thumb {
+            background: #dcd7cc;
+            border-radius: 4px;
+        }
+        .recipe-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
         .container {
             background-color: var(--card-bg);
             padding: 25px;
@@ -376,7 +399,7 @@
     <div class="sidebar">
         <div class="sidebar-card">
             <div class="section-title" style="margin-top:0; font-size: 15px; padding-bottom: 8px;">📚 Kayıtlı Laboratuvar Reçeteleri</div>
-            <div id="savedRecipesContainer"></div>
+            <div id="savedRecipesContainer" class="recipe-scroll-area"></div>
         </div>
 
         <div class="sidebar-card" style="border-color: #bcd5e0;">
@@ -663,7 +686,6 @@ function calculate() {
     const safAlkolHacmi = mlAlkol * 0.96;
     const finalAlkolDerecesi = mlTotalCalculated > 0 ? (safAlkolHacmi / mlTotalCalculated) * 100 : 0;
     
-    // BURADAKİ ID HATASI DÜZELTİLDİ: finalAlkolDerecesi -> finalAlkolDeger
     document.getElementById('finalAlkolDeger').textContent = finalAlkolDerecesi.toFixed(1) + '°';
 
     calculateReverse();
