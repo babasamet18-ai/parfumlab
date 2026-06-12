@@ -428,14 +428,14 @@
         <div class="input-row">
             <label for="esansPct">Esans Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="esansPct" value="0" step="0.1" oninput="calculate()">
+                <input type="number" id="esansPct" value="20" step="0.1" oninput="calculate()">
                 <span class="unit-label">%</span>
             </div>
         </div>
         <div class="input-row">
             <label for="suPct">Saf Su Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="suPct" value="0" step="0.1" oninput="calculate()">
+                <input type="number" id="suPct" value="4" step="0.1" oninput="calculate()">
                 <span class="unit-label">%</span>
             </div>
         </div>
@@ -561,7 +561,7 @@
                 <span class="col-right col-pct" id="rHedioneMl">0.00ml</span>
             </div>
             <div class="table-row" style="background-color: #edf7fa; font-weight: bold;">
-                <span style="color: #1d5266;">ÇIKACAK TOPLAM PARFÜM</span>
+                <span style="color: #1d5266;">CHIKACAK TOPLAM PARFÜM</span>
                 <span class="col-right col-val" id="rTotalG" style="color: #1d5266;">0.00g</span>
                 <span class="col-right col-pct" id="rTotalMl" style="color: #1d5266; font-weight: bold;">0.00ml</span>
             </div>
@@ -655,7 +655,6 @@ function calculate() {
     
     document.getElementById('finalAlkolDeger').textContent = finalAlkolDerecesi.toFixed(1) + '°';
 
-    // Üst taraf değiştikçe alt tarafı da tetikle
     calculateReverse();
 }
 
@@ -683,7 +682,6 @@ function calculateReverse() {
         return;
     }
 
-    // Toplam kütleyi esans kütlesi ve esans yüzdesinden buluyoruz
     const totalG = (inputEsansG * 100) / pEsans;
 
     const gAlkol = (totalG * pAlkol) / 100;
@@ -744,11 +742,7 @@ function saveRecipe() {
     localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
     
     nameInput.value = "";
-    document.getElementById('esansPct').value = 0;
-    document.getElementById('suPct').value = 0;
-    document.getElementById('gliserinPct').value = 0;
-    document.getElementById('hedionePct').value = 0;
-
+    // Temizleme işleminden esans ve su oranlarını çıkardım, girdileriniz korunuyor.
     calculate();
     displayRecipes();
 }
