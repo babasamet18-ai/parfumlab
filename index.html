@@ -663,7 +663,8 @@ function calculate() {
     const safAlkolHacmi = mlAlkol * 0.96;
     const finalAlkolDerecesi = mlTotalCalculated > 0 ? (safAlkolHacmi / mlTotalCalculated) * 100 : 0;
     
-    document.getElementById('finalAlkolDerecesi').textContent = finalAlkolDerecesi.toFixed(1) + '°';
+    // BURADAKİ ID HATASI DÜZELTİLDİ: finalAlkolDerecesi -> finalAlkolDeger
+    document.getElementById('finalAlkolDeger').textContent = finalAlkolDerecesi.toFixed(1) + '°';
 
     calculateReverse();
 }
@@ -729,7 +730,13 @@ function saveRecipe() {
         date: new Date().toLocaleDateString('tr-TR')
     };
 
-    let recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    let recipes = [];
+    try {
+        recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+        if (!Array.isArray(recipes)) recipes = [];
+    } catch(e) {
+        recipes = [];
+    }
     
     const existingIndex = recipes.findIndex(r => r.name === name);
     if (existingIndex !== -1) {
@@ -747,7 +754,13 @@ function saveRecipe() {
 
 function displayRecipes() {
     const container = document.getElementById('savedRecipesContainer');
-    const recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    let recipes = [];
+    try {
+        recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+        if (!Array.isArray(recipes)) recipes = [];
+    } catch(e) {
+        recipes = [];
+    }
     
     if (recipes.length === 0) {
         container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Henüz kayıtlı reçete yok.</div>';
@@ -773,7 +786,12 @@ function displayRecipes() {
 }
 
 function loadRecipe(index) {
-    const recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    let recipes = [];
+    try {
+        recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    } catch(e) {
+        return;
+    }
     const r = recipes[index];
     if (!r) return;
 
@@ -797,7 +815,12 @@ function loadRecipe(index) {
 }
 
 function deleteRecipe(index) {
-    let recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    let recipes = [];
+    try {
+        recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    } catch(e) {
+        return;
+    }
     recipes.splice(index, 1);
     localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
     displayRecipes();
