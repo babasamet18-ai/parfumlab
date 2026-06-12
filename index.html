@@ -435,21 +435,21 @@
         <div class="input-row">
             <label for="suPct">Saf Su Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="suPct" value="4" step="0.1" oninput="calculate()">
+                <input type="number" id="suPct" value="3" step="0.1" oninput="calculate()">
                 <span class="unit-label">%</span>
             </div>
         </div>
         <div class="input-row">
             <label for="gliserinPct">Gliserin Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="gliserinPct" value="0" step="0.1" oninput="calculate()">
+                <input type="number" id="gliserinPct" value="1" step="0.1" oninput="calculate()">
                 <span class="unit-label">%</span>
             </div>
         </div>
         <div class="input-row">
             <label for="hedionePct">Hedione Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="hedionePct" value="0" step="0.1" oninput="calculate()">
+                <input type="number" id="hedionePct" value="2" step="0.1" oninput="calculate()">
                 <span class="unit-label">%</span>
             </div>
         </div>
@@ -528,7 +528,7 @@
         <div class="input-row">
             <label for="reverseEsansG" style="color: #1d5266; font-weight: bold;">Şişedeki Esans Ağırlığı</label>
             <div class="input-wrapper">
-                <input type="number" id="reverseEsansG" value="5" step="0.01" oninput="calculateReverse()" style="border-color: #bcd5e0; background-color: #f0f7f9;">
+                <input type="number" id="reverseEsansG" value="4" step="0.01" oninput="calculateReverse()" style="border-color: #bcd5e0; background-color: #f0f7f9;">
                 <span class="unit-label">g</span>
             </div>
         </div>
@@ -537,7 +537,7 @@
             <div class="results-header reverse-header">🧮 Esans Sabitken Eklenmesi Gerekenler & Çıktı</div>
             <div class="table-row">
                 <span>Girdiğiniz Esans</span>
-                <span class="col-right col-val" id="rEsansG" style="color:#1d5266;">5.00g</span>
+                <span class="col-right col-val" id="rEsansG" style="color:#1d5266;">4.00g</span>
                 <span class="col-right col-pct" id="rEsansMl">0.00ml</span>
             </div>
             <div class="table-row">
@@ -561,7 +561,7 @@
                 <span class="col-right col-pct" id="rHedioneMl">0.00ml</span>
             </div>
             <div class="table-row" style="background-color: #edf7fa; font-weight: bold;">
-                <span style="color: #1d5266;">CHIKACAK TOPLAM PARFÜM</span>
+                <span style="color: #1d5266;">ÇIKACAK TOPLAM PARFÜM</span>
                 <span class="col-right col-val" id="rTotalG" style="color: #1d5266;">0.00g</span>
                 <span class="col-right col-pct" id="rTotalMl" style="color: #1d5266; font-weight: bold;">0.00ml</span>
             </div>
@@ -664,24 +664,15 @@ function calculateReverse() {
     const pSu = parseFloat(document.getElementById('suPct').value) || 0;
     const pGliserin = parseFloat(document.getElementById('gliserinPct').value) || 0;
     const pHedione = parseFloat(document.getElementById('hedionePct').value) || 0;
+    
+    // Alkol yüzdesi her zaman 100'e tamamlar
     const pAlkol = Math.max(0, 100 - (pEsans + pSu + pGliserin + pHedione));
 
     if (pEsans <= 0 || inputEsansG <= 0) {
-        document.getElementById('rEsansG').textContent = "0.00g";
-        document.getElementById('rEsansMl').textContent = "0.00ml";
-        document.getElementById('rAlkolG').textContent = "0.00g";
-        document.getElementById('rAlkolMl').textContent = "0.00ml";
-        document.getElementById('rSuG').textContent = "0.00g";
-        document.getElementById('rSuMl').textContent = "0.00ml";
-        document.getElementById('rGliserinG').textContent = "0.00g";
-        document.getElementById('rGliserinMl').textContent = "0.00ml";
-        document.getElementById('rHedioneG').textContent = "0.00g";
-        document.getElementById('rHedioneMl').textContent = "0.00ml";
-        document.getElementById('rTotalG').textContent = "0.00g";
-        document.getElementById('rTotalMl').textContent = "0.00ml";
         return;
     }
 
+    // Matematiksel Düzeltme: Esans kütlesi üzerinden nihai formül ağırlığı
     const totalG = (inputEsansG * 100) / pEsans;
 
     const gAlkol = (totalG * pAlkol) / 100;
@@ -742,7 +733,6 @@ function saveRecipe() {
     localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
     
     nameInput.value = "";
-    // Temizleme işleminden esans ve su oranlarını çıkardım, girdileriniz korunuyor.
     calculate();
     displayRecipes();
 }
