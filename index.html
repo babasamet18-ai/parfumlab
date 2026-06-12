@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parfüm Lab - Profesyonel Hesaplayıcı</title>
+    <title>Parfüm Lab - Profesyonel Hesaplayıcı ve Reçete Defteri</title>
     <style>
         :root {
             --bg-color: #fcfbfa;
@@ -14,6 +14,8 @@
             --border-color: #f2ede4;
             --input-bg: #f7f5f0;
             --header-bg: #f4edd9;
+            --danger-color: #c94c4c;
+            --success-bg: #e2f0d9;
         }
 
         * {
@@ -57,7 +59,6 @@
             margin-bottom: 20px;
         }
 
-        /* Üst Özet Paneli */
         .summary-dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -92,7 +93,6 @@
             color: #8c6f39;
         }
 
-        /* Form Elemanları */
         .section-title {
             font-size: 14px;
             font-weight: bold;
@@ -121,7 +121,7 @@
             align-items: center;
         }
 
-        input[type="number"] {
+        input[type="number"], input[type="text"] {
             width: 100%;
             padding: 8px 25px 8px 10px;
             background-color: var(--input-bg);
@@ -130,10 +130,18 @@
             color: var(--text-color);
             font-size: 14px;
             font-weight: bold;
+        }
+
+        input[type="number"] {
             text-align: right;
         }
 
-        input[type="number"]:focus {
+        input[type="text"] {
+            text-align: left;
+            padding-right: 10px;
+        }
+
+        input:focus {
             outline: none;
             border-color: var(--accent-color);
             background-color: #fff;
@@ -147,7 +155,25 @@
             pointer-events: none;
         }
 
-        /* Tablo Çıktıları */
+        /* Kayıt Butonu Tasarımı */
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .btn-save:hover {
+            background-color: #aa8d50;
+        }
+
         .results-panel {
             background-color: #fffdf9;
             border: 1px solid var(--border-color);
@@ -197,13 +223,71 @@
         .alkol-highlight {
             color: #b38627 !important;
         }
+
+        /* Kayıtlı Reçeteler Listesi */
+        .recipe-list {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .recipe-item {
+            background-color: var(--input-bg);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .recipe-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .recipe-title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .recipe-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .recipe-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-load {
+            background-color: #e2f0d9;
+            color: #385723;
+        }
+
+        .btn-delete {
+            background-color: #fce4d6;
+            color: #c65911;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Parfüm Tarifi Sonuçları</h1>
-    <div class="subtitle">Parfüm Lab Hassas Hesaplama Motoru</div>
+    <div class="subtitle">Parfüm Lab Hassas Hesaplama ve Arşiv Motoru</div>
 
     <div class="summary-dashboard">
         <div class="dash-card full-width">
@@ -218,6 +302,11 @@
             <div class="dash-label">Hedef Ağırlık</div>
             <div class="dash-value" id="dashAgirlik">42.50 g</div>
         </div>
+    </div>
+
+    <div class="section-title">Reçete Bilgisi</div>
+    <div class="input-row" style="grid-template-columns: 1fr;">
+        <input type="text" id="recipeName" value="Scandal Pour Homme Absolu" placeholder="Reçete adını yazın...">
     </div>
 
     <div class="section-title">Hedef Değer Tanımlamaları</div>
@@ -265,6 +354,8 @@
             <span class="unit-label">%</span>
         </div>
     </div>
+
+    <button class="btn-save" onclick="saveRecipe()">💾 Bu Reçeteyi Kaydet</button>
 
     <div class="results-panel">
         <div class="results-header">⚖️ Kütlesel Değerler (Hassas Tartım İçin)</div>
@@ -333,35 +424,35 @@
             <span class="col-right col-pct">(%100.0)</span>
         </div>
     </div>
+
+    <div class="recipe-list">
+        <div class="section-title" style="margin-top:0;">📚 Kayıtlı Laboratuvar Reçeteleri</div>
+        <div id="savedRecipesContainer">
+            </div>
+    </div>
 </div>
 
 <script>
-// Laboratuvar Yoğunluk Sabitleri (g/cm³)
 const dEsans = 0.97;
-const dAlkol96 = 0.80; // %96'lık etil alkolün yaklaşık yoğunluğu
+const dAlkol96 = 0.80; 
 const dSu = 1.00;
 const dGliserin = 1.26;
 const dHedione = 1.00;
 
 function calculate() {
-    // Giriş Hedefleri
     const targetMl = parseFloat(document.getElementById('targetMl').value) || 50;
     const targetG = parseFloat(document.getElementById('targetG').value) || 42.5;
 
-    // Arayüz başlık güncellemeleri
     document.getElementById('dashHacim').textContent = targetMl.toFixed(2) + ' ml';
     document.getElementById('dashAgirlik').textContent = targetG.toFixed(2) + ' g';
 
-    // Kullanıcı kütlesel yüzdeleri
     const pEsans = parseFloat(document.getElementById('esansPct').value) || 0;
     const pSu = parseFloat(document.getElementById('suPct').value) || 0;
     const pGliserin = parseFloat(document.getElementById('gliserinPct').value) || 0;
     const pHedione = parseFloat(document.getElementById('hedionePct').value) || 0;
 
-    // Alkolü otomatik tamamlama (%100'den kalan)
     const pAlkol = Math.max(0, 100 - (pEsans + pSu + pGliserin + pHedione));
 
-    // 1. KÜTLESEL HESAPLAMALAR (Gram cinsinden doğrudan ağırlık paylaştırma)
     const gEsans = (targetG * pEsans) / 100;
     const gAlkol = (targetG * pAlkol) / 100;
     const gSu = (targetG * pSu) / 100;
@@ -369,25 +460,18 @@ function calculate() {
     const gHedione = (targetG * pHedione) / 100;
     const gTotal = gEsans + gAlkol + gSu + gGliserin + gHedione;
 
-    // Kütlesel Tablo Güncelleme
     document.getElementById('kEsansG').textContent = gEsans.toFixed(2) + 'g';
     document.getElementById('kEsansPct').textContent = `(%${pEsans.toFixed(1)})`;
-    
     document.getElementById('kAlkolG').textContent = gAlkol.toFixed(2) + 'g';
     document.getElementById('kAlkolPct').textContent = `(%${pAlkol.toFixed(1)})`;
-    
     document.getElementById('kSuG').textContent = gSu.toFixed(2) + 'g';
     document.getElementById('kSuPct').textContent = `(%${pSu.toFixed(1)})`;
-    
     document.getElementById('kGliserinG').textContent = gGliserin.toFixed(2) + 'g';
     document.getElementById('kGliserinPct').textContent = `(%${pGliserin.toFixed(1)})`;
-    
     document.getElementById('kHedioneG').textContent = gHedione.toFixed(2) + 'g';
     document.getElementById('kHedionePct').textContent = `(%${pHedione.toFixed(1)})`;
-    
     document.getElementById('kTotalG').textContent = gTotal.toFixed(2) + 'g';
 
-    // 2. HACİMSEL HESAPLAMALAR (Kütle / Yoğunluk = Mililitre)
     const mlEsans = gEsans / dEsans;
     const mlAlkol = gAlkol / dAlkol96;
     const mlSu = gSu / dSu;
@@ -395,42 +479,111 @@ function calculate() {
     const mlHedione = gHedione / dHedione;
     const mlTotalCalculated = mlEsans + mlAlkol + mlSu + mlGliserin + mlHedione;
 
-    // Hacimsel Yüzdeler (Her bir ml / toplam ml)
     const hPctEsans = mlTotalCalculated > 0 ? (mlEsans / mlTotalCalculated) * 100 : 0;
     const hPctAlkol = mlTotalCalculated > 0 ? (mlAlkol / mlTotalCalculated) * 100 : 0;
     const hPctSu = mlTotalCalculated > 0 ? (mlSu / mlTotalCalculated) * 100 : 0;
     const hPctGliserin = mlTotalCalculated > 0 ? (mlGliserin / mlTotalCalculated) * 100 : 0;
     const hPctHedione = mlTotalCalculated > 0 ? (mlHedione / mlTotalCalculated) * 100 : 0;
 
-    // Hacimsel Tablo Güncelleme
     document.getElementById('hEsansMl').textContent = mlEsans.toFixed(2) + 'ml';
     document.getElementById('hEsansPct').textContent = `(%${hPctEsans.toFixed(1)})`;
-
     document.getElementById('hAlkolMl').textContent = mlAlkol.toFixed(2) + 'ml';
     document.getElementById('hAlkolPct').textContent = `(%${hPctAlkol.toFixed(1)})`;
-
     document.getElementById('hSuMl').textContent = mlSu.toFixed(2) + 'ml';
     document.getElementById('hSuPct').textContent = `(%${hPctSu.toFixed(1)})`;
-
     document.getElementById('hGliserinMl').textContent = mlGliserin.toFixed(2) + 'ml';
     document.getElementById('hGliserinPct').textContent = `(%${hPctGliserin.toFixed(1)})`;
-
     document.getElementById('hHedioneMl').textContent = mlHedione.toFixed(2) + 'ml';
     document.getElementById('hHedionePct').textContent = `(%${hPctHedione.toFixed(1)})`;
-
     document.getElementById('hTotalMl').textContent = targetMl.toFixed(2) + 'ml';
 
-    // 3. FİNAL ALKOL DERECESİ HESAPLAMA (Görseldeki mantıkla tam uyum)
-    // Giriş yapılan alkol %96'lıktır. Toplam hacim içerisindeki saf alkol payı hesaplanır.
     const safAlkolHacmi = mlAlkol * 0.96;
     const finalAlkolDerecesi = mlTotalCalculated > 0 ? (safAlkolHacmi / mlTotalCalculated) * 100 : 0;
     
-    // Görseldeki hassas kalibrasyon yuvarlamasını simüle etmek adına küçük bir düzeltmeyle yazdırıyoruz
     document.getElementById('finalAlkolDeger').textContent = finalAlkolDerecesi.toFixed(1) + '°';
 }
 
-// Sayfa ilk yüklendiğinde otomatik hesapla
+// ARŞİVLEME VE KAYIT SİSTEMİ (LocalStorage)
+function saveRecipe() {
+    const name = document.getElementById('recipeName').value.trim() || "Adsız Reçete";
+    const data = {
+        name: name,
+        targetMl: document.getElementById('targetMl').value,
+        targetG: document.getElementById('targetG').value,
+        esans: document.getElementById('esansPct').value,
+        su: document.getElementById('suPct').value,
+        gliserin: document.getElementById('gliserinPct').value,
+        hedione: document.getElementById('hedionePct').value,
+        date: new Date().toLocaleDateString('tr-TR')
+    };
+
+    let recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    
+    // Aynı isimde eski kayıt varsa üzerine yaz, yoksa yeni ekle
+    const existingIndex = recipes.findIndex(r => r.name === name);
+    if (existingIndex !== -1) {
+        recipes[existingIndex] = data;
+    } else {
+        recipes.push(data);
+    }
+
+    localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
+    displayRecipes();
+}
+
+function displayRecipes() {
+    const container = document.getElementById('savedRecipesContainer');
+    const recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    
+    if (recipes.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Henüz kayıtlı reçete yok.</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    recipes.forEach((r, index) => {
+        const item = document.createElement('div');
+        item.className = 'recipe-item';
+        item.innerHTML = `
+            <div class="recipe-info">
+                <span class="recipe-title">${r.name}</span>
+                <span class="recipe-meta">${r.targetMl}ml / ${r.targetG}g — E:%${r.esans} Alkol:%${(100 - parseFloat(r.esans) - parseFloat(r.su) - parseFloat(r.gliserin) - parseFloat(r.hedione)).toFixed(1)}</span>
+            </div>
+            <div class="recipe-actions">
+                <button class="btn-action btn-load" onclick="loadRecipe(${index})">Yükle</button>
+                <button class="btn-action btn-delete" onclick="deleteRecipe(${index})">Sil</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function loadRecipe(index) {
+    const recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    const r = recipes[index];
+    if (!r) return;
+
+    document.getElementById('recipeName').value = r.name;
+    document.getElementById('targetMl').value = r.targetMl;
+    document.getElementById('targetG').value = r.targetG;
+    document.getElementById('esansPct').value = r.esans;
+    document.getElementById('suPct').value = r.su;
+    document.getElementById('gliserinPct').value = r.gliserin;
+    document.getElementById('hedionePct').value = r.hedione;
+
+    calculate();
+}
+
+function deleteRecipe(index) {
+    let recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
+    recipes.splice(index, 1);
+    localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
+    displayRecipes();
+}
+
+// Açılış Çalıştırmaları
 calculate();
+displayRecipes();
 </script>
 
 </body>
