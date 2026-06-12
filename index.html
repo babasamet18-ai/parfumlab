@@ -72,14 +72,12 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Reçete Listesi İçin Kaydırma Alanı (Scroll Çözümü) */
         .recipe-scroll-area {
-            max-height: 240px; /* Maksimum 3-4 reçete yüksekliği, fazlasında scroll çıkar */
+            max-height: 240px;
             overflow-y: auto;
             padding-right: 5px;
         }
 
-        /* İnce ve Şık Scroll Çubuğu Tasarımı */
         .recipe-scroll-area::-webkit-scrollbar {
             width: 6px;
         }
@@ -460,12 +458,12 @@
                 <div class="dash-value" id="finalAlkolDeger">0.0°</div>
             </div>
             <div class="dash-card">
-                <div class="dash-label">Hedef Hacim</div>
-                <div class="dash-value" id="dashHacim">50.00 ml</div>
+                <div class="dash-label">Hesaplanan Toplam Hacim</div>
+                <div class="dash-value" id="dashHacim">0.00 ml</div>
             </div>
             <div class="dash-card">
-                <div class="dash-label">Hedef Ağırlık</div>
-                <div class="dash-value" id="dashAgirlik">42.50 g</div>
+                <div class="dash-label">Hesaplanan Toplam Kütle</div>
+                <div class="dash-value" id="dashAgirlik">0.00 g</div>
             </div>
         </div>
 
@@ -478,7 +476,47 @@
             <input type="text" id="recipeName" value="" placeholder="Reçete adını yazın...">
         </div>
 
-        <div class="section-title">Hedef Değer Tanımlamaları</div>
+        <div class="section-title" style="color: #2e6930; border-bottom-color: #c5e1a5;">🧪 YONTEM A: Doğrudan Tartım Girişi (Gram Değerleri)</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Elinizdeki hassas terazi ölçümlerini direkt buraya yazabilirsiniz. Yazdıkça aşağıdaki yüzdeler otomatik güncellenir.</div>
+        
+        <div class="input-row">
+            <label for="gEsans">Esans Kütlesi</label>
+            <div class="input-wrapper">
+                <input type="number" id="gEsans" value="9" step="0.01" oninput="calculateFromGram()">
+                <span class="unit-label">g</span>
+            </div>
+        </div>
+        <div class="input-row">
+            <label for="gAlkol">Alkol Kütlesi</label>
+            <div class="input-wrapper">
+                <input type="number" id="gAlkol" value="31.5" step="0.01" oninput="calculateFromGram()">
+                <span class="unit-label">g</span>
+            </div>
+        </div>
+        <div class="input-row">
+            <label for="gSu">Saf Su Kütlesi</label>
+            <div class="input-wrapper">
+                <input type="number" id="gSu" value="0.45" step="0.01" oninput="calculateFromGram()">
+                <span class="unit-label">g</span>
+            </div>
+        </div>
+        <div class="input-row">
+            <label for="gGliserin">Gliserin Kütlesi</label>
+            <div class="input-wrapper">
+                <input type="number" id="gGliserin" value="1.27" step="0.01" oninput="calculateFromGram()">
+                <span class="unit-label">g</span>
+            </div>
+        </div>
+        <div class="input-row">
+            <label for="gHedione">Hedione Kütlesi</label>
+            <div class="input-wrapper">
+                <input type="number" id="gHedione" value="0.8" step="0.01" oninput="calculateFromGram()">
+                <span class="unit-label">g</span>
+            </div>
+        </div>
+
+
+        <div class="section-title">📊 YONTEM B: Hedef Hacim & Yüzdesel Oran Girişi</div>
         
         <div class="volume-presets">
             <button class="btn-preset" onclick="setVolumePreset(10, 8.5, this)">10 ml</button>
@@ -490,44 +528,43 @@
         <div class="input-row">
             <label for="targetMl">Toplam Hacim Hedefi</label>
             <div class="input-wrapper">
-                <input type="number" id="targetMl" value="50" step="1" oninput="removePresetActive(); calculate();">
+                <input type="number" id="targetMl" value="50" step="1" oninput="removePresetActive(); calculateFromPct();">
                 <span class="unit-label">ml</span>
             </div>
         </div>
         <div class="input-row">
             <label for="targetG">Toplam Kütle Hedefi</label>
             <div class="input-wrapper">
-                <input type="number" id="targetG" value="42.5" step="0.1" oninput="removePresetActive(); calculate();">
+                <input type="number" id="targetG" value="42.5" step="0.1" oninput="removePresetActive(); calculateFromPct();">
                 <span class="unit-label">g</span>
             </div>
         </div>
 
-        <div class="section-title">Bileşim Oranları Girişi (Kütlesel %)</div>
         <div class="input-row">
             <label for="esansPct">Esans Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="esansPct" value="20" step="0.1" oninput="calculate()">
+                <input type="number" id="esansPct" value="20" step="0.1" oninput="calculateFromPct()">
                 <span class="unit-label">%</span>
             </div>
         </div>
         <div class="input-row">
             <label for="suPct">Saf Su Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="suPct" value="3" step="0.1" oninput="calculate()">
+                <input type="number" id="suPct" value="3" step="0.1" oninput="calculateFromPct()">
                 <span class="unit-label">%</span>
             </div>
         </div>
         <div class="input-row">
             <label for="gliserinPct">Gliserin Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="gliserinPct" value="1" step="0.1" oninput="calculate()">
+                <input type="number" id="gliserinPct" value="1" step="0.1" oninput="calculateFromPct()">
                 <span class="unit-label">%</span>
             </div>
         </div>
         <div class="input-row">
             <label for="hedionePct">Hedione Oranı</label>
             <div class="input-wrapper">
-                <input type="number" id="hedionePct" value="2" step="0.1" oninput="calculate()">
+                <input type="number" id="hedionePct" value="2" step="0.1" oninput="calculateFromPct()">
                 <span class="unit-label">%</span>
             </div>
         </div>
@@ -540,7 +577,7 @@
                 <span class="col-right col-pct" id="kEsansPct">(%0.0)</span>
             </div>
             <div class="table-row">
-                <span style="font-weight: bold; color: #b38627;">Alkol (Otomatik)</span>
+                <span style="font-weight: bold; color: #b38627;">Alkol</span>
                 <span class="col-right col-val alkol-highlight" id="kAlkolG">0.00g</span>
                 <span class="col-right col-pct alkol-highlight" id="kAlkolPct">(%0.0)</span>
             </div>
@@ -562,7 +599,7 @@
             <div class="table-row">
                 <span>Toplam Ağırlık</span>
                 <span class="col-right col-val" id="kTotalG">0.00g</span>
-                <span class="col-right col-pct">(%100.0)</span>
+                <span class="col-right col-pct" id="kTotalPct">(%100.0)</span>
             </div>
         </div>
 
@@ -596,7 +633,7 @@
             <div class="table-row">
                 <span>Toplam Hacim</span>
                 <span class="col-right col-val" id="hTotalMl">0.00ml</span>
-                <span class="col-right col-pct">(%100.0)</span>
+                <span class="col-right col-pct" id="hTotalMlpct">(%100.0)</span>
             </div>
         </div>
 
@@ -610,6 +647,8 @@ const dSu = 1.00;
 const dGliserin = 1.26;
 const dHedione = 1.00;
 
+let activeMode = 'gram'; // 'gram' veya 'pct'
+
 function setVolumePreset(ml, g, buttonElement) {
     document.getElementById('targetMl').value = ml;
     document.getElementById('targetG').value = g;
@@ -617,7 +656,8 @@ function setVolumePreset(ml, g, buttonElement) {
     removePresetActive();
     buttonElement.classList.add('active');
     
-    calculate();
+    activeMode = 'pct';
+    runCalculation();
 }
 
 function removePresetActive() {
@@ -625,27 +665,84 @@ function removePresetActive() {
     buttons.forEach(btn => btn.classList.remove('active'));
 }
 
-function calculate() {
-    const targetMl = parseFloat(document.getElementById('targetMl').value) || 50;
-    const targetG = parseFloat(document.getElementById('targetG').value) || 42.5;
+function calculateFromGram() {
+    activeMode = 'gram';
+    removePresetActive();
+    runCalculation();
+}
 
-    document.getElementById('dashHacim').textContent = targetMl.toFixed(2) + ' ml';
-    document.getElementById('dashAgirlik').textContent = targetG.toFixed(2) + ' g';
+function calculateFromPct() {
+    activeMode = 'pct';
+    runCalculation();
+}
 
-    const pEsans = parseFloat(document.getElementById('esansPct').value) || 0;
-    const pSu = parseFloat(document.getElementById('suPct').value) || 0;
-    const pGliserin = parseFloat(document.getElementById('gliserinPct').value) || 0;
-    const pHedione = parseFloat(document.getElementById('hedionePct').value) || 0;
+function runCalculation() {
+    let gEsans, gAlkol, gSu, gGliserin, gHedione, gTotal, targetMl;
+    let pEsans, pAlkol, pSu, pGliserin, pHedione;
 
-    const pAlkol = Math.max(0, 100 - (pEsans + pSu + pGliserin + pHedione));
+    if (activeMode === 'gram') {
+        gEsans = parseFloat(document.getElementById('gEsans').value) || 0;
+        gAlkol = parseFloat(document.getElementById('gAlkol').value) || 0;
+        gSu = parseFloat(document.getElementById('gSu').value) || 0;
+        gGliserin = parseFloat(document.getElementById('gGliserin').value) || 0;
+        gHedione = parseFloat(document.getElementById('gHedione').value) || 0;
+        gTotal = gEsans + gAlkol + gSu + gGliserin + gHedione;
 
-    const gEsans = (targetG * pEsans) / 100;
-    const gAlkol = (targetG * pAlkol) / 100;
-    const gSu = (targetG * pSu) / 100;
-    const gGliserin = (targetG * pGliserin) / 100;
-    const gHedione = (targetG * pHedione) / 100;
-    const gTotal = gEsans + gAlkol + gSu + gGliserin + gHedione;
+        if(gTotal > 0) {
+            pEsans = (gEsans / gTotal) * 100;
+            pAlkol = (gAlkol / gTotal) * 100;
+            pSu = (gSu / gTotal) * 100;
+            pGliserin = (gGliserin / gTotal) * 100;
+            pHedione = (gHedione / gTotal) * 100;
+        } else {
+            pEsans = pAlkol = pSu = pGliserin = pHedione = 0;
+        }
 
+        // Arayüzdeki yüzde kutularını kilitlemeden güncelle
+        document.getElementById('esansPct').value = pEsans.toFixed(1);
+        document.getElementById('suPct').value = pSu.toFixed(1);
+        document.getElementById('gliserinPct').value = pGliserin.toFixed(1);
+        document.getElementById('hedionePct').value = pHedione.toFixed(1);
+
+    } else {
+        // Yüzdesel Mod
+        const targetG = parseFloat(document.getElementById('targetG').value) || 42.5;
+        pEsans = parseFloat(document.getElementById('esansPct').value) || 0;
+        pSu = parseFloat(document.getElementById('suPct').value) || 0;
+        pGliserin = parseFloat(document.getElementById('gliserinPct').value) || 0;
+        pHedione = parseFloat(document.getElementById('hedionePct').value) || 0;
+        pAlkol = Math.max(0, 100 - (pEsans + pSu + pGliserin + pHedione));
+
+        gEsans = (targetG * pEsans) / 100;
+        gAlkol = (targetG * pAlkol) / 100;
+        gSu = (targetG * pSu) / 100;
+        gGliserin = (targetG * pGliserin) / 100;
+        gHedione = (targetG * pHedione) / 100;
+        gTotal = gEsans + gAlkol + gSu + gGliserin + gHedione;
+
+        // Gram giriş kutularını güncelle
+        document.getElementById('gEsans').value = gEsans.toFixed(2);
+        document.getElementById('gAlkol').value = gAlkol.toFixed(2);
+        document.getElementById('gSu').value = gSu.toFixed(2);
+        document.getElementById('gGliserin').value = gGliserin.toFixed(2);
+        document.getElementById('gHedione').value = gHedione.toFixed(2);
+    }
+
+    // Hacim Hesaplamaları
+    const mlEsans = gEsans / dEsans;
+    const mlAlkol = gAlkol / dAlkol96;
+    const mlSu = gSu / dSu;
+    const mlGliserin = gGliserin / dGliserin;
+    const mlHedione = gHedione / dHedione;
+    const mlTotalCalculated = mlEsans + mlAlkol + mlSu + mlGliserin + mlHedione;
+
+    targetMl = activeMode === 'pct' ? (parseFloat(document.getElementById('targetMl').value) || 50) : mlTotalCalculated;
+
+    // Dashboard Güncelleme
+    document.getElementById('dashHacim').textContent = mlTotalCalculated.toFixed(2) + ' ml';
+    document.getElementById('dashAgirlik').textContent = gTotal.toFixed(2) + ' g';
+
+    // Kütlesel Tablo Çıktıları
     document.getElementById('kEsansG').textContent = gEsans.toFixed(2) + 'g';
     document.getElementById('kEsansPct').textContent = `(%${pEsans.toFixed(1)})`;
     document.getElementById('kAlkolG').textContent = gAlkol.toFixed(2) + 'g';
@@ -657,14 +754,9 @@ function calculate() {
     document.getElementById('kHedioneG').textContent = gHedione.toFixed(2) + 'g';
     document.getElementById('kHedionePct').textContent = `(%${pHedione.toFixed(1)})`;
     document.getElementById('kTotalG').textContent = gTotal.toFixed(2) + 'g';
+    document.getElementById('kTotalPct').textContent = `(%100.0)`;
 
-    const mlEsans = gEsans / dEsans;
-    const mlAlkol = gAlkol / dAlkol96;
-    const mlSu = gSu / dSu;
-    const mlGliserin = gGliserin / dGliserin;
-    const mlHedione = gHedione / dHedione;
-    const mlTotalCalculated = mlEsans + mlAlkol + mlSu + mlGliserin + mlHedione;
-
+    // Hacimsel Tablo Çıktıları
     const hPctEsans = mlTotalCalculated > 0 ? (mlEsans / mlTotalCalculated) * 100 : 0;
     const hPctAlkol = mlTotalCalculated > 0 ? (mlAlkol / mlTotalCalculated) * 100 : 0;
     const hPctSu = mlTotalCalculated > 0 ? (mlSu / mlTotalCalculated) * 100 : 0;
@@ -681,11 +773,12 @@ function calculate() {
     document.getElementById('hGliserinPct').textContent = `(%${hPctGliserin.toFixed(1)})`;
     document.getElementById('hHedioneMl').textContent = mlHedione.toFixed(2) + 'ml';
     document.getElementById('hHedionePct').textContent = `(%${hPctHedione.toFixed(1)})`;
-    document.getElementById('hTotalMl').textContent = targetMl.toFixed(2) + 'ml';
+    document.getElementById('hTotalMl').textContent = mlTotalCalculated.toFixed(2) + 'ml';
+    document.getElementById('hTotalMlpct').textContent = `(%100.0)`;
 
+    // Alkol Derecesi
     const safAlkolHacmi = mlAlkol * 0.96;
     const finalAlkolDerecesi = mlTotalCalculated > 0 ? (safAlkolHacmi / mlTotalCalculated) * 100 : 0;
-    
     document.getElementById('finalAlkolDeger').textContent = finalAlkolDerecesi.toFixed(1) + '°';
 
     calculateReverse();
@@ -700,12 +793,9 @@ function calculateReverse() {
     
     const pAlkol = Math.max(0, 100 - (pEsans + pSu + pGliserin + pHedione));
 
-    if (pEsans <= 0 || inputEsansG <= 0) {
-        return;
-    }
+    if (pEsans <= 0 || inputEsansG <= 0) return;
 
     const totalG = (inputEsansG * 100) / pEsans;
-
     const gAlkol = (totalG * pAlkol) / 100;
     const gSu = (totalG * pSu) / 100;
     const gGliserin = (totalG * pGliserin) / 100;
@@ -720,19 +810,14 @@ function calculateReverse() {
 
     document.getElementById('rEsansG').textContent = inputEsansG.toFixed(2) + "g";
     document.getElementById('rEsansMl').textContent = mlEsans.toFixed(2) + "ml";
-    
     document.getElementById('rAlkolG').textContent = gAlkol.toFixed(2) + "g";
     document.getElementById('rAlkolMl').textContent = mlAlkol.toFixed(2) + "ml";
-    
     document.getElementById('rSuG').textContent = gSu.toFixed(2) + "g";
     document.getElementById('rSuMl').textContent = mlSu.toFixed(2) + "ml";
-    
     document.getElementById('rGliserinG').textContent = gGliserin.toFixed(2) + "g";
     document.getElementById('rGliserinMl').textContent = mlGliserin.toFixed(2) + "ml";
-    
     document.getElementById('rHedioneG').textContent = gHedione.toFixed(2) + "g";
     document.getElementById('rHedioneMl').textContent = mlHedione.toFixed(2) + "ml";
-    
     document.getElementById('rTotalG').textContent = totalG.toFixed(2) + "g";
     document.getElementById('rTotalMl').textContent = totalMl.toFixed(2) + "ml";
 }
@@ -743,8 +828,8 @@ function saveRecipe() {
     
     const data = {
         name: name,
-        targetMl: document.getElementById('targetMl').value,
-        targetG: document.getElementById('targetG').value,
+        targetMl: document.getElementById('dashHacim').textContent.replace(' ml',''),
+        targetG: document.getElementById('dashAgirlik').textContent.replace(' g',''),
         esans: document.getElementById('esansPct').value,
         su: document.getElementById('suPct').value,
         gliserin: document.getElementById('gliserinPct').value,
@@ -756,21 +841,14 @@ function saveRecipe() {
     try {
         recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
         if (!Array.isArray(recipes)) recipes = [];
-    } catch(e) {
-        recipes = [];
-    }
+    } catch(e) { recipes = []; }
     
     const existingIndex = recipes.findIndex(r => r.name === name);
-    if (existingIndex !== -1) {
-        recipes[existingIndex] = data;
-    } else {
-        recipes.push(data);
-    }
+    if (existingIndex !== -1) { recipes[existingIndex] = data; } else { recipes.push(data); }
 
     localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
-    
     nameInput.value = "";
-    calculate();
+    runCalculation();
     displayRecipes();
 }
 
@@ -780,9 +858,7 @@ function displayRecipes() {
     try {
         recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
         if (!Array.isArray(recipes)) recipes = [];
-    } catch(e) {
-        recipes = [];
-    }
+    } catch(e) { recipes = []; }
     
     if (recipes.length === 0) {
         container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Henüz kayıtlı reçete yok.</div>';
@@ -809,46 +885,34 @@ function displayRecipes() {
 
 function loadRecipe(index) {
     let recipes = [];
-    try {
-        recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
-    } catch(e) {
-        return;
-    }
+    try { recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || []; } catch(e) { return; }
     const r = recipes[index];
     if (!r) return;
 
     document.getElementById('recipeName').value = r.name;
-    document.getElementById('targetMl').value = r.targetMl;
-    document.getElementById('targetG').value = r.targetG;
     document.getElementById('esansPct').value = r.esans;
     document.getElementById('suPct').value = r.su;
     document.getElementById('gliserinPct').value = r.gliserin;
     document.getElementById('hedionePct').value = r.hedione;
 
-    removePresetActive();
-    const buttons = document.querySelectorAll('.btn-preset');
-    buttons.forEach(btn => {
-        if(btn.textContent.includes(r.targetMl + ' ml')) {
-            btn.classList.add('active');
-        }
-    });
+    activeMode = 'pct';
+    document.getElementById('targetMl').value = r.targetMl;
+    document.getElementById('targetG').value = r.targetG;
 
-    calculate();
+    removePresetActive();
+    runCalculation();
 }
 
 function deleteRecipe(index) {
     let recipes = [];
-    try {
-        recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || [];
-    } catch(e) {
-        return;
-    }
+    try { recipes = JSON.parse(localStorage.getItem('parfumRecipes')) || []; } catch(e) { return; }
     recipes.splice(index, 1);
     localStorage.setItem('parfumRecipes', JSON.stringify(recipes));
     displayRecipes();
 }
 
-calculate();
+// İlk açılışta verileri çalıştır (varsayılan gramlarla)
+runCalculation();
 displayRecipes();
 </script>
 
