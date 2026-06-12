@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parfüm Lab - Formül Hesaplayıcı</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #bb86fc;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: #333333;
+            --error-color: #cf6679;
+            --success-color: #03dac6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #2d2d2d;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .warning {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 5px;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .results {
+            margin-top: 25px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 500;
+        }
+
+        .result-val {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>PARFÜM LAB</h1>
+    <div class="subtitle">Hassas Kütle Formülasyon Hesaplayıcı</div>
+
+    <div class="input-group">
+        <label for="totalWeight">Hedef Toplam Miktar (Gram)</label>
+        <input type="number" id="totalWeight" value="50" step="0.1" oninput="calculate()">
+    </div>
+
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label for="esansPct">Esans Oranı (%)</label>
+            <input type="number" id="esansPct" value="20" step="0.5" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label for="alkolPct">Alkol Oranı (%)</label>
+            <input type="number" id="alkolPct" value="74" step="0.5" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label for="suPct">Su Oranı (%)</label>
+            <input type="number" id="suPct" value="4" step="0.5" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label for="fiksaPct">Fiksatör Oranı (%)</label>
+            <input type="number" id="fiksaPct" value="2" step="0.5" oninput="calculate()">
+        </div>
+    </div>
+
+    <div id="statusMessage" class="warning"></div>
+
+    <div class="results">
+        <div class="result-row">
+            <span class="result-label">Esans Miktarı:</span>
+            <span class="result-val" id="esansG">0.00 g</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Alkol Miktarı:</span>
+            <span class="result-val" id="alkolG">0.00 g</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Saf Su Miktarı:</span>
+            <span class="result-val" id="suG">0.00 g</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Fiksatör Miktarı:</span>
+            <span class="result-val" id="fiksaG">0.00 g</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const total = parseFloat(document.getElementById('totalWeight').value) || 0;
+    const esans = parseFloat(document.getElementById('esansPct').value) || 0;
+    const alkol = parseFloat(document.getElementById('alkolPct').value) || 0;
+    const su = parseFloat(document.getElementById('suPct').value) || 0;
+    const fiksa = parseFloat(document.getElementById('fiksaPct').value) || 0;
+
+    const totalPct = esans + alkol + su + fiksa;
+    const status = document.getElementById('statusMessage');
+
+    if (Math.abs(totalPct - 100) > 0.01) {
+        status.textContent = `Hata: Girdiğiniz yüzdelerin toplamı %${totalPct.toFixed(1)} yapıyor. Toplam %100 olmalıdır.`;
+        status.style.color = "var(--error-color)";
+    } else {
+        status.textContent = "Oranlar dengeli (%100)";
+        status.style.color = "var(--success-color)";
+    }
+
+    document.getElementById('esansG').textContent = ((total * esans) / 100).toFixed(2) + ' g';
+    document.getElementById('alkolG').textContent = ((total * alkol) / 100).toFixed(2) + ' g';
+    document.getElementById('suG').textContent = ((total * su) / 100).toFixed(2) + ' g';
+    document.getElementById('fiksaG').textContent = ((total * fiksa) / 100).toFixed(2) + ' g';
+}
+
+// İlk açılışta hesapla
+calculate();
+</script>
+
+</body>
+</html>
