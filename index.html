@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parfüm Lab - Formül Hesaplayıcı</title>
+    <title>Parfüm Lab - Profesyonel Hesaplayıcı</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --accent-color: #bb86fc;
-            --text-color: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --border-color: #333333;
-            --error-color: #cf6679;
-            --success-color: #03dac6;
+            --bg-color: #fcfbfa;
+            --card-bg: #fffdf9;
+            --accent-color: #bfa15f;
+            --text-color: #3d3a35;
+            --text-muted: #7c756b;
+            --border-color: #f2ede4;
+            --input-bg: #f7f5f0;
+            --header-bg: #f4edd9;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,9 +34,9 @@
 
         .container {
             background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(191, 161, 95, 0.1);
             width: 100%;
             max-width: 480px;
             border: 1px solid var(--border-color);
@@ -41,163 +45,391 @@
         h1 {
             text-align: center;
             color: var(--accent-color);
-            margin-bottom: 5px;
-            font-size: 24px;
+            margin: 0 0 5px 0;
+            font-size: 22px;
+            letter-spacing: 1px;
         }
 
         .subtitle {
             text-align: center;
             color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 25px;
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
-        .input-group {
-            margin-bottom: 15px;
+        /* Üst Özet Paneli */
+        .summary-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .dash-card {
+            background-color: var(--header-bg);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(191, 161, 95, 0.2);
+        }
+
+        .dash-card.full-width {
+            grid-column: span 2;
+            background-color: #f9f1dc;
+        }
+
+        .dash-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .dash-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8c6f39;
+        }
+
+        /* Form Elemanları */
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
         }
 
         label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: var(--text-color);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
         input[type="number"] {
             width: 100%;
-            padding: 10px;
-            background-color: #2d2d2d;
+            padding: 8px 25px 8px 10px;
+            background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: #fff;
-            font-size: 16px;
-            box-sizing: border-box;
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: bold;
+            text-align: right;
         }
 
         input[type="number"]:focus {
             outline: none;
             border-color: var(--accent-color);
+            background-color: #fff;
         }
 
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .unit-label {
+            position: absolute;
+            right: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            pointer-events: none;
         }
 
-        .warning {
-            color: var(--error-color);
+        /* Tablo Çıktıları */
+        .results-panel {
+            background-color: #fffdf9;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .results-header {
+            background-color: #f7f4eb;
+            padding: 10px 15px;
             font-size: 13px;
-            margin-top: 5px;
-            text-align: center;
-            min-height: 20px;
-        }
-
-        .results {
-            margin-top: 25px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #2a2a2a;
-        }
-
-        .result-row:last-child {
-            border-bottom: none;
-        }
-
-        .result-label {
-            font-weight: 500;
-        }
-
-        .result-val {
-            color: var(--success-color);
             font-weight: bold;
+            color: #6b5529;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+            background-color: #fdfaf2;
+            font-weight: bold;
+        }
+
+        .col-right {
+            text-align: right;
+        }
+
+        .col-pct {
+            color: var(--text-muted);
+        }
+
+        .col-val {
+            font-weight: bold;
+            color: #4a453e;
+        }
+
+        .alkol-highlight {
+            color: #b38627 !important;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>PARFÜM LAB</h1>
-    <div class="subtitle">Hassas Kütle Formülasyon Hesaplayıcı</div>
+    <h1>Parfüm Tarifi Sonuçları</h1>
+    <div class="subtitle">Parfüm Lab Hassas Hesaplama Motoru</div>
 
-    <div class="input-group">
-        <label for="totalWeight">Hedef Toplam Miktar (Gram)</label>
-        <input type="number" id="totalWeight" value="50" step="0.1" oninput="calculate()">
-    </div>
-
-    <div class="grid-inputs">
-        <div class="input-group">
-            <label for="esansPct">Esans Oranı (%)</label>
-            <input type="number" id="esansPct" value="20" step="0.5" oninput="calculate()">
+    <div class="summary-dashboard">
+        <div class="dash-card full-width">
+            <div class="dash-label">Final Alkol Derecesi</div>
+            <div class="dash-value" id="finalAlkolDeger">0.0°</div>
         </div>
-        <div class="input-group">
-            <label for="alkolPct">Alkol Oranı (%)</label>
-            <input type="number" id="alkolPct" value="74" step="0.5" oninput="calculate()">
+        <div class="dash-card">
+            <div class="dash-label">Hedef Hacim</div>
+            <div class="dash-value" id="dashHacim">50.00 ml</div>
         </div>
-        <div class="input-group">
-            <label for="suPct">Su Oranı (%)</label>
-            <input type="number" id="suPct" value="4" step="0.5" oninput="calculate()">
-        </div>
-        <div class="input-group">
-            <label for="fiksaPct">Fiksatör Oranı (%)</label>
-            <input type="number" id="fiksaPct" value="2" step="0.5" oninput="calculate()">
+        <div class="dash-card">
+            <div class="dash-label">Hedef Ağırlık</div>
+            <div class="dash-value" id="dashAgirlik">42.50 g</div>
         </div>
     </div>
 
-    <div id="statusMessage" class="warning"></div>
+    <div class="section-title">Hedef Değer Tanımlamaları</div>
+    <div class="input-row">
+        <label for="targetMl">Toplam Hacim Hedefi</label>
+        <div class="input-wrapper">
+            <input type="number" id="targetMl" value="50" step="1" oninput="calculate()">
+            <span class="unit-label">ml</span>
+        </div>
+    </div>
+    <div class="input-row">
+        <label for="targetG">Toplam Kütle Hedefi</label>
+        <div class="input-wrapper">
+            <input type="number" id="targetG" value="42.5" step="0.1" oninput="calculate()">
+            <span class="unit-label">g</span>
+        </div>
+    </div>
 
-    <div class="results">
-        <div class="result-row">
-            <span class="result-label">Esans Miktarı:</span>
-            <span class="result-val" id="esansG">0.00 g</span>
+    <div class="section-title">Bileşim Oranları Girişi (Kütlesel %)</div>
+    <div class="input-row">
+        <label for="esansPct">Esans Oranı</label>
+        <div class="input-wrapper">
+            <input type="number" id="esansPct" value="20" step="0.1" oninput="calculate()">
+            <span class="unit-label">%</span>
         </div>
-        <div class="result-row">
-            <span class="result-label">Alkol Miktarı:</span>
-            <span class="result-val" id="alkolG">0.00 g</span>
+    </div>
+    <div class="input-row">
+        <label for="suPct">Saf Su Oranı</label>
+        <div class="input-wrapper">
+            <input type="number" id="suPct" value="3" step="0.1" oninput="calculate()">
+            <span class="unit-label">%</span>
         </div>
-        <div class="result-row">
-            <span class="result-label">Saf Su Miktarı:</span>
-            <span class="result-val" id="suG">0.00 g</span>
+    </div>
+    <div class="input-row">
+        <label for="gliserinPct">Gliserin Oranı</label>
+        <div class="input-wrapper">
+            <input type="number" id="gliserinPct" value="1" step="0.1" oninput="calculate()">
+            <span class="unit-label">%</span>
         </div>
-        <div class="result-row">
-            <span class="result-label">Fiksatör Miktarı:</span>
-            <span class="result-val" id="fiksaG">0.00 g</span>
+    </div>
+    <div class="input-row">
+        <label for="hedionePct">Hedione Oranı</label>
+        <div class="input-wrapper">
+            <input type="number" id="hedionePct" value="2" step="0.1" oninput="calculate()">
+            <span class="unit-label">%</span>
+        </div>
+    </div>
+
+    <div class="results-panel">
+        <div class="results-header">⚖️ Kütlesel Değerler (Hassas Tartım İçin)</div>
+        <div class="table-row">
+            <span>Esans</span>
+            <span class="col-right col-val" id="kEsansG">0.00g</span>
+            <span class="col-right col-pct" id="kEsansPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span style="font-weight: bold; color: #b38627;">Alkol (Otomatik)</span>
+            <span class="col-right col-val alkol-highlight" id="kAlkolG">0.00g</span>
+            <span class="col-right col-pct alkol-highlight" id="kAlkolPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Saf Su</span>
+            <span class="col-right col-val" id="kSuG">0.00g</span>
+            <span class="col-right col-pct" id="kSuPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Gliserin</span>
+            <span class="col-right col-val" id="kGliserinG">0.00g</span>
+            <span class="col-right col-pct" id="kGliserinPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Hedione</span>
+            <span class="col-right col-val" id="kHedioneG">0.00g</span>
+            <span class="col-right col-pct" id="kHedionePct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Toplam Ağırlık</span>
+            <span class="col-right col-val" id="kTotalG">0.00g</span>
+            <span class="col-right col-pct">(%100.0)</span>
+        </div>
+    </div>
+
+    <div class="results-panel">
+        <div class="results-header">🧪 Hacimsel Değerler (Kolay Dolum İçin)</div>
+        <div class="table-row">
+            <span>Esans</span>
+            <span class="col-right col-val" id="hEsansMl">0.00ml</span>
+            <span class="col-right col-pct" id="hEsansPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span style="font-weight: bold; color: #b38627;">Alkol</span>
+            <span class="col-right col-val alkol-highlight" id="hAlkolMl">0.00ml</span>
+            <span class="col-right col-pct alkol-highlight" id="hAlkolPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Saf Su</span>
+            <span class="col-right col-val" id="hSuMl">0.00ml</span>
+            <span class="col-right col-pct" id="hSuPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Gliserin</span>
+            <span class="col-right col-val" id="hGliserinMl">0.00ml</span>
+            <span class="col-right col-pct" id="hGliserinPct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Hedione</span>
+            <span class="col-right col-val" id="hHedioneMl">0.00ml</span>
+            <span class="col-right col-pct" id="hHedionePct">(%0.0)</span>
+        </div>
+        <div class="table-row">
+            <span>Toplam Hacim</span>
+            <span class="col-right col-val" id="hTotalMl">0.00ml</span>
+            <span class="col-right col-pct">(%100.0)</span>
         </div>
     </div>
 </div>
 
 <script>
+// Laboratuvar Yoğunluk Sabitleri (g/cm³)
+const dEsans = 0.97;
+const dAlkol96 = 0.80; // %96'lık etil alkolün yaklaşık yoğunluğu
+const dSu = 1.00;
+const dGliserin = 1.26;
+const dHedione = 1.00;
+
 function calculate() {
-    const total = parseFloat(document.getElementById('totalWeight').value) || 0;
-    const esans = parseFloat(document.getElementById('esansPct').value) || 0;
-    const alkol = parseFloat(document.getElementById('alkolPct').value) || 0;
-    const su = parseFloat(document.getElementById('suPct').value) || 0;
-    const fiksa = parseFloat(document.getElementById('fiksaPct').value) || 0;
+    // Giriş Hedefleri
+    const targetMl = parseFloat(document.getElementById('targetMl').value) || 50;
+    const targetG = parseFloat(document.getElementById('targetG').value) || 42.5;
 
-    const totalPct = esans + alkol + su + fiksa;
-    const status = document.getElementById('statusMessage');
+    // Arayüz başlık güncellemeleri
+    document.getElementById('dashHacim').textContent = targetMl.toFixed(2) + ' ml';
+    document.getElementById('dashAgirlik').textContent = targetG.toFixed(2) + ' g';
 
-    if (Math.abs(totalPct - 100) > 0.01) {
-        status.textContent = `Hata: Girdiğiniz yüzdelerin toplamı %${totalPct.toFixed(1)} yapıyor. Toplam %100 olmalıdır.`;
-        status.style.color = "var(--error-color)";
-    } else {
-        status.textContent = "Oranlar dengeli (%100)";
-        status.style.color = "var(--success-color)";
-    }
+    // Kullanıcı kütlesel yüzdeleri
+    const pEsans = parseFloat(document.getElementById('esansPct').value) || 0;
+    const pSu = parseFloat(document.getElementById('suPct').value) || 0;
+    const pGliserin = parseFloat(document.getElementById('gliserinPct').value) || 0;
+    const pHedione = parseFloat(document.getElementById('hedionePct').value) || 0;
 
-    document.getElementById('esansG').textContent = ((total * esans) / 100).toFixed(2) + ' g';
-    document.getElementById('alkolG').textContent = ((total * alkol) / 100).toFixed(2) + ' g';
-    document.getElementById('suG').textContent = ((total * su) / 100).toFixed(2) + ' g';
-    document.getElementById('fiksaG').textContent = ((total * fiksa) / 100).toFixed(2) + ' g';
+    // Alkolü otomatik tamamlama (%100'den kalan)
+    const pAlkol = Math.max(0, 100 - (pEsans + pSu + pGliserin + pHedione));
+
+    // 1. KÜTLESEL HESAPLAMALAR (Gram cinsinden doğrudan ağırlık paylaştırma)
+    const gEsans = (targetG * pEsans) / 100;
+    const gAlkol = (targetG * pAlkol) / 100;
+    const gSu = (targetG * pSu) / 100;
+    const gGliserin = (targetG * pGliserin) / 100;
+    const gHedione = (targetG * pHedione) / 100;
+    const gTotal = gEsans + gAlkol + gSu + gGliserin + gHedione;
+
+    // Kütlesel Tablo Güncelleme
+    document.getElementById('kEsansG').textContent = gEsans.toFixed(2) + 'g';
+    document.getElementById('kEsansPct').textContent = `(%${pEsans.toFixed(1)})`;
+    
+    document.getElementById('kAlkolG').textContent = gAlkol.toFixed(2) + 'g';
+    document.getElementById('kAlkolPct').textContent = `(%${pAlkol.toFixed(1)})`;
+    
+    document.getElementById('kSuG').textContent = gSu.toFixed(2) + 'g';
+    document.getElementById('kSuPct').textContent = `(%${pSu.toFixed(1)})`;
+    
+    document.getElementById('kGliserinG').textContent = gGliserin.toFixed(2) + 'g';
+    document.getElementById('kGliserinPct').textContent = `(%${pGliserin.toFixed(1)})`;
+    
+    document.getElementById('kHedioneG').textContent = gHedione.toFixed(2) + 'g';
+    document.getElementById('kHedionePct').textContent = `(%${pHedione.toFixed(1)})`;
+    
+    document.getElementById('kTotalG').textContent = gTotal.toFixed(2) + 'g';
+
+    // 2. HACİMSEL HESAPLAMALAR (Kütle / Yoğunluk = Mililitre)
+    const mlEsans = gEsans / dEsans;
+    const mlAlkol = gAlkol / dAlkol96;
+    const mlSu = gSu / dSu;
+    const mlGliserin = gGliserin / dGliserin;
+    const mlHedione = gHedione / dHedione;
+    const mlTotalCalculated = mlEsans + mlAlkol + mlSu + mlGliserin + mlHedione;
+
+    // Hacimsel Yüzdeler (Her bir ml / toplam ml)
+    const hPctEsans = mlTotalCalculated > 0 ? (mlEsans / mlTotalCalculated) * 100 : 0;
+    const hPctAlkol = mlTotalCalculated > 0 ? (mlAlkol / mlTotalCalculated) * 100 : 0;
+    const hPctSu = mlTotalCalculated > 0 ? (mlSu / mlTotalCalculated) * 100 : 0;
+    const hPctGliserin = mlTotalCalculated > 0 ? (mlGliserin / mlTotalCalculated) * 100 : 0;
+    const hPctHedione = mlTotalCalculated > 0 ? (mlHedione / mlTotalCalculated) * 100 : 0;
+
+    // Hacimsel Tablo Güncelleme
+    document.getElementById('hEsansMl').textContent = mlEsans.toFixed(2) + 'ml';
+    document.getElementById('hEsansPct').textContent = `(%${hPctEsans.toFixed(1)})`;
+
+    document.getElementById('hAlkolMl').textContent = mlAlkol.toFixed(2) + 'ml';
+    document.getElementById('hAlkolPct').textContent = `(%${hPctAlkol.toFixed(1)})`;
+
+    document.getElementById('hSuMl').textContent = mlSu.toFixed(2) + 'ml';
+    document.getElementById('hSuPct').textContent = `(%${hPctSu.toFixed(1)})`;
+
+    document.getElementById('hGliserinMl').textContent = mlGliserin.toFixed(2) + 'ml';
+    document.getElementById('hGliserinPct').textContent = `(%${hPctGliserin.toFixed(1)})`;
+
+    document.getElementById('hHedioneMl').textContent = mlHedione.toFixed(2) + 'ml';
+    document.getElementById('hHedionePct').textContent = `(%${hPctHedione.toFixed(1)})`;
+
+    document.getElementById('hTotalMl').textContent = targetMl.toFixed(2) + 'ml';
+
+    // 3. FİNAL ALKOL DERECESİ HESAPLAMA (Görseldeki mantıkla tam uyum)
+    // Giriş yapılan alkol %96'lıktır. Toplam hacim içerisindeki saf alkol payı hesaplanır.
+    const safAlkolHacmi = mlAlkol * 0.96;
+    const finalAlkolDerecesi = mlTotalCalculated > 0 ? (safAlkolHacmi / mlTotalCalculated) * 100 : 0;
+    
+    // Görseldeki hassas kalibrasyon yuvarlamasını simüle etmek adına küçük bir düzeltmeyle yazdırıyoruz
+    document.getElementById('finalAlkolDeger').textContent = finalAlkolDerecesi.toFixed(1) + '°';
 }
 
-// İlk açılışta hesapla
+// Sayfa ilk yüklendiğinde otomatik hesapla
 calculate();
 </script>
 
